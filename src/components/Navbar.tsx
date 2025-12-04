@@ -9,12 +9,11 @@ const Navbar = () => {
         {/* Left: Logo */}
         <div className="flex items-center space-x-2">
           <img
-            src="/logo.svg " // replace with your logo path (e.g., /fox.png)
+            src="/nobg-logo.png " 
             alt="Foxico Logo"
-            width={28}
-            height={28}
+className="w-12 h-12 object-contain"
           />
-          <h1 className="text-lg font-bold text-white">TravelX</h1>
+          <h1 className="hidden text-lg font-bold text-white">TravelX</h1>
         </div>
 
         {/* Center: Navigation Links */}

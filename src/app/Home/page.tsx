@@ -14,6 +14,8 @@ interface Card {
 
 const HeroSection: React.FC = () => {
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const [bookmarkedCards, setBookmarkedCards] = useState<Set<number>>(new Set());
+    const [showExploreMessage, setShowExploreMessage] = useState(false);
     const bgRef = useRef<HTMLDivElement>(null);
     const leftBtnRef = useRef<HTMLButtonElement>(null);
     const rightBtnRef = useRef<HTMLButtonElement>(null);
@@ -70,6 +72,28 @@ const HeroSection: React.FC = () => {
             image: "/thamel.jpg",
         },
     ];
+
+    // Handle bookmark click
+    const handleBookmarkClick = (cardId: number, e: React.MouseEvent) => {
+        e.stopPropagation();
+        setBookmarkedCards((prev) => {
+            const newSet = new Set(prev);
+            if (newSet.has(cardId)) {
+                newSet.delete(cardId);
+            } else {
+                newSet.add(cardId);
+            }
+            return newSet;
+        });
+    };
+
+    // Handle explore button click
+    const handleExplore = () => {
+        setShowExploreMessage(true);
+        setTimeout(() => {
+            setShowExploreMessage(false);
+        }, 2500);
+    };
 
     // Embla callbacks
     const onSelect = useCallback(() => {
@@ -195,7 +219,9 @@ const HeroSection: React.FC = () => {
                                 <p ref={descRef} className="max-w-xl mb-6 text-md text-white/70 leading-6">
                                     {cards[selectedIndex].description}
                                 </p>
-                                <button className="z-40 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-semibold transition w-32 flex justify-between items-center text-lg">
+                                <button 
+                                    onClick={handleExplore}
+                                    className="z-40 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-semibold transition w-32 flex justify-between items-center text-lg">
                                     <div>Explore</div>
                                     <div>→</div>
                                 </button>
@@ -231,8 +257,19 @@ const HeroSection: React.FC = () => {
                                                         </div>
 
                                                         <div className="relative card w-full h-[90%] rounded-md overflow-hidden">
-                                                            <div className="absolute top-3 right-3 bookmark p-2 rounded-full bg-white w-fit">
-                                                                <img src="/bookmark.svg" alt="bookmark" />
+                                                            <div 
+                                                                className={`absolute top-3 right-3 bookmark p-2 rounded-full cursor-pointer transition-all duration-300 w-fit ${
+                                                                    bookmarkedCards.has(card.id) 
+                                                                        ? 'bg-yellow-400 scale-110' 
+                                                                        : 'bg-white hover:scale-105'
+                                                                }`}
+                                                                onClick={(e) => handleBookmarkClick(card.id, e)}
+                                                            >
+                                                                <img 
+                                                                    src="/bookmark.svg" 
+                                                                    alt="bookmark"
+                                                                    className={bookmarkedCards.has(card.id) ? 'invert' : ''}
+                                                                />
                                                             </div>
                                                             <img
                                                                 src={card.image}
@@ -268,6 +305,15 @@ const HeroSection: React.FC = () => {
                         </button>
                     </div>
                 </div>
+
+                {/* Explore Message Popup */}
+                {showExploreMessage && (
+                    <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 ease-in-out">
+                        <div className="h-[30vh] w-[40vw] bg-blue-600 text-white px-8 py-4 rounded-lg shadow-2xl text-center text-lg sm:text-3xl font-semibold flex items-center justify-center">
+                            ✨ This is only the hero section, more coming soon!
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
